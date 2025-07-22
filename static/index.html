@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图像分类训练与预测</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background-color: #f4f4f9; color: #333; }
+        h1, h2 { color: #444; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .section { margin-bottom: 2em; border-bottom: 1px solid #ddd; padding-bottom: 1em; }
+        .section:last-child { border-bottom: none; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        input[type="text"], input[type="file"] { padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; width: calc(100% - 18px); }
+        .dataset-group { margin-bottom: 1em; padding: 1em; border: 1px solid #eee; border-radius: 5px; position: relative; }
+        .remove-class-btn { position: absolute; top: 10px; right: 10px; background-color: #dc3545; font-size: 0.8em; padding: 5px 8px; }
+        .remove-class-btn:hover { background-color: #c82333; }
+        .file-preview-container { margin-top: 10px; max-height: 150px; overflow-y: auto; }
+        .file-preview-item { display: flex; justify-content: space-between; align-items: center; padding: 5px; border-bottom: 1px solid #f0f0f0; }
+        .file-preview-item:last-child { border-bottom: none; }
+        .remove-file-btn { background: none; border: none; color: #dc3545; cursor: pointer; font-weight: bold; }
+        #video-container { margin-top: 1em; position: relative; }
+        video { background: #000; border: 1px solid #ddd; border-radius: 5px; }
+        #prediction-result { font-size: 1.5em; font-weight: bold; color: #d9534f; text-align: center; margin-top: 10px; }
+        #status { margin-top: 1em; font-style: italic; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>图像分类器</h1>
+
+        <div class="section">
+            <h2>第一步：上传数据集</h2>
+            <form id="upload-form">
+                <div id="dataset-container">
+                    <div class="dataset-group">
+                        <label>分类名称:</label>
+                        <input type="text" name="class_name" required placeholder="例如: cat">
+                        <label>图片文件:</label>
+                        <input type="file" name="files" multiple required>
+                        <div class="file-preview-container"></div>
+                        <button type="button" class="remove-class-btn" style="display: none;">×</button>
+                    </div>
+                </div>
+                <button type="button" id="add-class-btn">添加更多分类</button>
+                <button type="submit" id="upload-btn">上传数据集</button>
+            </form>
+            <div id="upload-progress-container" style="display: none; margin-top: 1em;">
+                <p><strong>上传进度:</strong></p>
+                <progress id="upload-progress-bar" value="0" max="100" style="width: 100%;"></progress>
+            </div>
+
+            <div id="server-datasets-container" style="margin-top: 1.5em; border-top: 1px solid #ddd; padding-top: 1em;">
+                <h4>服务器上的数据集:</h4>
+                <ul id="server-datasets-list" style="list-style-type: none; padding-left: 0;">
+                    <!-- Datasets will be rendered here -->
+                </ul>
+                <button id="delete-all-datasets-btn" style="display: none; background-color: #c82333;">清空所有数据集</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>第二步：训练模型</h2>
+            <button id="train-btn" disabled>开始训练</button>
+            <div id="training-progress-container" style="display: none; margin-top: 1em;">
+                <p><strong>训练进度:</strong></p>
+                <progress id="training-progress-bar" value="0" max="100" style="width: 100%;"></progress>
+                <pre id="training-log" style="background: #eee; padding: 10px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word;"></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>第三步：实时预测</h2>
+            <button id="start-camera-btn" disabled>启动摄像头</button>
+            <button id="stop-camera-btn" style="display: none; background-color: #dc3545;">关闭摄像头</button>
+            <div id="video-container">
+                <video id="video" width="640" height="480" autoplay playsinline></video>
+                <div id="prediction-result"></div>
+            </div>
+            <div id="confidence-bars-container" style="margin-top: 1em;">
+                <h3>实时置信度</h3>
+                <!-- Confidence bars will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>项目管理</h2>
+            <div id="project-management-container">
+                <button id="export-btn">导出项目 (.zip)</button>
+                <form id="import-form" style="margin-top: 1em; border-top: 1px solid #eee; padding-top: 1em;">
+                    <label for="import-file-input">导入项目 (.zip):</label>
+                    <input type="file" id="import-file-input" accept=".zip" required>
+                    <button type="submit" id="import-btn" disabled>上传并导入</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="status">准备就绪</div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html> 
